@@ -39,18 +39,20 @@ def fatal(msg):
 
 def main():
     parser = argparse.ArgumentParser(description="A Runner's Calculator", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--km-time", type=str, help="Time for a single km (kilometer) MM:SS", default="6:00")
+    parser.add_argument("--km", type=float, help="Number of kilometers run", default=1.0)
+    parser.add_argument("--time", type=str, help="Time taken to run kilometers HH:MM:SS")
     parser.add_argument("--marathon", action="store_true", help="Show marathon (" + str(MARATHON_KM) + " km) \
         and half-marathon (" + str(HALF_MARATHON_KM) + " km) times")
     args = parser.parse_args()
 
-    if args.km_time:
+    if args.time:
         try:
-            (mm, ss) = args.km_time.split(':')
-            km_time = (int(mm) + int(ss) / 60.0) / 60.0
+            (hh, mm, ss) = args.time.split(':')
+            time = int(hh) + (int(mm) + int(ss) / 60.0) / 60.0
         except ValueError:
-            fatal("Time format must be 'MM:SS'")
+            fatal("Time format must be 'HH:MM:SS'")
 
+        km_time = time / args.km
         km = 1.0
         while km < 43.0:
             print_time_at_km(km, km_time)
@@ -60,6 +62,9 @@ def main():
                 elif math.trunc(km) == math.trunc(MARATHON_KM):
                     print_time_at_km(MARATHON_KM, km_time)
             km += 1.0
+    else:
+        fatal("Please provide a time")
+
 
 if __name__ == '__main__':
     main()
